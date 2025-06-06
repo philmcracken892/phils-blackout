@@ -1,7 +1,6 @@
 local RSGCore = exports['rsg-core']:GetCoreObject()
-
+lib.locale()
 local generatorStates = {}
-
 
 local function getIdentifierKey(identifier)
     if identifier.type == 'netId' then
@@ -13,24 +12,20 @@ local function getIdentifierKey(identifier)
     return nil
 end
 
-
 RegisterNetEvent('generator_toggle:togglePower')
 AddEventHandler('generator_toggle:togglePower', function(identifier)
     local src = source
     local key = getIdentifierKey(identifier)
     if not key then
         TriggerClientEvent('ox_lib:notify', src, {
-            title = 'Generator Error',
-            description = 'Invalid identifier for generator.',
+            title = locale('sv_lang_1'),
+            description = locale('sv_lang_2'),
             type = 'error',
             duration = 3000
         })
         return
     end
 
-    
     generatorStates[key] = not generatorStates[key] or false
-   
     TriggerClientEvent('generator_toggle:updatePowerState', -1, identifier, generatorStates[key])
-    
 end)

@@ -1,0 +1,13 @@
+{
+"cl_lang_1": "Generator Error",
+"cl_lang_2": "Generator entity not found",
+"cl_lang_3": "Generator Warning",
+"cl_lang_4": "Failed to get network ID, using coordinates as fallback",
+"cl_lang_5": "Toggle Generator",
+"cl_lang_6": "Generator Status",
+"cl_lang_7": "The electric has been toggled",
+"cl_lang_8": "Blackout Toggle",
+"cl_lang_9": "Blackout",
+"sv_lang_1": "Generator Error",
+"sv_lang_2": "Invalid identifier for generator"
+}
