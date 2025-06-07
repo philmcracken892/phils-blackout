@@ -1,7 +1,8 @@
 local RSGCore = exports['rsg-core']:GetCoreObject()
-local isBlackoutEnabled = false 
+local isBlackoutEnabled = false
 local isGeneratorOn = false
 local autoBlackoutEnabled = true -- Set to false if you want to disable auto blackout
+local hasWarnedBlackout = false -- New flag to prevent repeated notifications
 
 local function toggleGeneratorPower(entity)
     if not DoesEntityExist(entity) then
@@ -52,7 +53,7 @@ for _, model in ipairs(generatorModels) do
         {
             name = 'toggle_generator',
             icon = 'fas fa-power-off',
-            label = 'Toggle Generator',
+            label = 'Toggle Power',
             onSelect = function(data)
                 toggleGeneratorPower(data.entity)
             end,
@@ -92,26 +93,38 @@ AddEventHandler('generator_toggle:updatePowerState', function(identifier, state)
     end
 end)
 
-
 local function checkAutoBlackout()
     if not autoBlackoutEnabled then return end
     
     local hour = GetClockHours()
     local minute = GetClockMinutes()
     
+    -- 5-minute warning before blackout
+    if hour == 0 and minute == 55 and not isBlackoutEnabled and not hasWarnedBlackout then
+        hasWarnedBlackout = true -- Set flag to prevent repeated notifications
+        lib.notify({
+            title = 'Blackout Warning',
+            description = 'Scheduled light maintenance will begin in 5 minutes at 01:00.',
+            type = 'warning',
+            duration = 5000
+        })
+    end
     
+    -- Blackout start
     if hour == 1 and minute == 0 and not isBlackoutEnabled then
         isBlackoutEnabled = true
         SetArtificialLightsState(isBlackoutEnabled)
         lib.notify({
-            title = 'Automatic Blackout',
+            title = 'MAINTENANCE',
             description = 'Scheduled light maintenance has begun (01:00)',
             type = 'warning',
             duration = 5000
         })
     
+    -- Blackout end and reset warning flag
     elseif hour == 3 and minute == 0 and isBlackoutEnabled then
         isBlackoutEnabled = false
+        hasWarnedBlackout = false -- Reset flag for next cycle
         SetArtificialLightsState(isBlackoutEnabled)
         lib.notify({
             title = 'Power Restored',
@@ -133,7 +146,6 @@ RegisterCommand("toggleblackout", function(source, args, rawCommand)
     })
 end, false)
 
-
 RegisterCommand("toggleautoblackout", function(source, args, rawCommand)
     local PlayerData = RSGCore.Functions.GetPlayerData()
     if PlayerData.job.name ~= 'vallaw' then -- Change to your admin job or add permission check
@@ -154,7 +166,6 @@ RegisterCommand("toggleautoblackout", function(source, args, rawCommand)
         duration = 5000
     })
 end, false)
-
 
 Citizen.CreateThread(function()
     while true do
