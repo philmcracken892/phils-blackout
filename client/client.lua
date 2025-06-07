@@ -2,7 +2,7 @@ local RSGCore = exports['rsg-core']:GetCoreObject()
 local isBlackoutEnabled = false
 local isGeneratorOn = false
 local autoBlackoutEnabled = true -- Set to false if you want to disable auto blackout
-local hasWarnedBlackout = false -- New flag to prevent repeated notifications
+local hasWarnedBlackout = false 
 
 local function toggleGeneratorPower(entity)
     if not DoesEntityExist(entity) then
